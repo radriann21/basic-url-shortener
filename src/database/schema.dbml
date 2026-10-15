@@ -1,0 +1,26 @@
+Table urls {
+  id bigint [pk, increment, note: "Identificador único autoincremental"]
+  slug varchar(10) [not null, unique, note: "Identificador corto de la URL"]
+  original_url text [not null, note: "URL original de destino"]
+  expires_at timestamptz [null, note: "Fecha límite de validez. NULL indica que nunca expira"]
+  is_active boolean [not null, default: true, note: "Banderilla para desactivación manual"]
+  created_at timestamptz [not null, default: `now()`, note: "Fecha de creación del registro"]
+
+  Indexes {
+    slug [name: "idx_urls_slug", note: "Índice principal para la resolución rápida del slug"]
+  }
+}
+
+Table clicks {
+  id bigint [pk, increment, note: "Identificador único del evento de clic"]
+  url_id bigint [not null, ref: > urls.id, note: "Relación con la URL original"]
+  ip_address inet [null, note: "Dirección IP del cliente"]
+  user_agent text [null, note: "User-Agent del navegador o cliente"]
+  referer text [null, note: "Sitio web de procedencia (HTTP Referer)"]
+  country_code varchar(3) [null, note: "Código de país de 2 o 3 letras (ISO)"]
+  clicked_at timestamptz [not null, default: `now()`, note: "Fecha y hora exacta del clic"]
+
+  Indexes {
+    url_id [name: "idx_clicks_url_id", note: "Índice para agrupar estadísticas por enlace"]
+  }
+}
