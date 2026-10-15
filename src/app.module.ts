@@ -10,6 +10,8 @@ import {
   type ThrottlerOptions,
 } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
+import { DrizzleModule } from '@nestjs/drizzle';
+import { drizzle } from 'drizzle-orm/node-postgres'
 import configuration from './config/configuration.js';
 
 @Module({
@@ -17,6 +19,14 @@ import configuration from './config/configuration.js';
     ConfigModule.forRoot({
       load: [configuration],
       isGlobal: true,
+    }),
+    DrizzleModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        drizzle,
+        connection: config.getOrThrow<string>('databaseUrl')
+      })
     }),
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],

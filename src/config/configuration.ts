@@ -6,6 +6,7 @@ export default () => ({
     database: process.env.POSTGRES_DB,
     port: parseInt(process.env.POSTGRES_PORT ?? '', 10) || 5433,
   },
+  databaseUrl: process.env.DATABASE_URL,
   redis: {
     host: process.env.REDIS_HOST ?? 'localhost',
     password: process.env.REDIS_PASSWORD,
