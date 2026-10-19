@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { AppController } from './app.controller.js';
-import { AppService } from './app.service.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
   ThrottlerGuard,
@@ -11,7 +9,9 @@ import {
 } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 import { DrizzleModule } from '@nestjs/drizzle';
-import { drizzle } from 'drizzle-orm/node-postgres'
+import { drizzle } from 'drizzle-orm/node-postgres';
+import { HealthModule } from './modules/health/health.module.js';
+import { URLModule } from './modules/url/url.module.js';
 import configuration from './config/configuration.js';
 
 @Module({
@@ -25,8 +25,8 @@ import configuration from './config/configuration.js';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         drizzle,
-        connection: config.getOrThrow<string>('databaseUrl')
-      })
+        connection: config.getOrThrow<string>('databaseUrl'),
+      }),
     }),
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
@@ -40,10 +40,11 @@ import configuration from './config/configuration.js';
         }),
       }),
     }),
+    HealthModule,
+    URLModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
-    AppService,
     {
       useClass: ThrottlerGuard,
       provide: APP_GUARD,
